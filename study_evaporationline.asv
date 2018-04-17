@@ -1,7 +1,8 @@
 % code to explore the isotopic composition of evaporating water volumes
-% according to the Craig-Goron (1965) model. References at the bottom of
-% the file. 
+% according to the Craig-Goron (1965) model
 % Paolo Benettin, January 2018
+
+% references at the bottom of the file
 
 clc
 clear variables
@@ -21,17 +22,17 @@ start_seasonaldynamics=1;  %flag to run this part of code
 % notation
 %--------------------------------------------------------------------------
 
-% dl: isotopic composition of the residual liquid (sometimes referred to as dS)
-% dS: isotopic composition of the residual liquid (sometimes referred to as dl)
-% da: isotopic composition of the ambient athmospheric vapor (atmospheric moisture)
-% dE: isotopic composition of the evaporating flux
+% dl: isotopic content of the residual liquid (sometimes referred to as dS)
+% dS: isotopic content of the residual liquid (sometimes referred to as dl)
+% da: isotopic content of the ambient athmospheric vapor (atmospheric moisture)
+% dE: isotopic content of the evaporating flux
 % alphae: fractionation factor at equilibrium (Rliq/Rvap)
-% epse=alphae-1: equilibrium fractionation factor (expressed in permil)
-% epsk: kinetic fractionation factor (expressed in permil) 
+% epse=alphae-1: equilibrium fractionation factor (expressed in permil) 
 % Tc: Temperature [degree Celsius]
 % Tk: Temperature [Kelvin]
 % hm: relative humidity [-]
 % x: ratio evaporation/precipitation [-]
+% epsk: kinetic fractionation factor (expressed in permil) 
 
 
 %--------------------------------------------------------------------------
@@ -40,7 +41,7 @@ start_seasonaldynamics=1;  %flag to run this part of code
 if start_evaporatingvolume==1
 
 % set the main PARAMETERS
-
+    
 % choose input isotopic composition
 dp_H=-38; %example value from Gonfiantini 1986
 dp_O=-6; %example value from Gonfiantini 1986
@@ -65,13 +66,13 @@ epse_H=(alphae_H-1)*1000; %permil notation
 epse_O=(alphae_O-1)*1000; %permil notation
 
 % get kinetic fractionation factors
-epsk_H=n*(1-hm)*(1-0.9755)*1000; %0.9755 value from Merlivat (1978) %permil notation
-epsk_O=n*(1-hm)*(1-0.9723)*1000; %0.9723 from Merlivat (1978) %permil notation
+epsk_H=n*(1-0.9755)*1000*(1-hm); %0.9755 value from Merlivat (1978) %permil notation
+epsk_O=n*(1-0.9723)*1000*(1-hm); %0.9723 from Merlivat (1978) %permil notation
 
 % get atmospheric composition from precipitation-equilibrium assumption (Gibson et al., 2008)
 k=1; %seasonality factor 
-da_H=(dp_H-k*epse_H)./(1+k*epse_H*10^-3); %if k=1 it is equivalent to da_H=(dp_H-epse_H)./alphae_H
-da_O=(dp_O-k*epse_O)./(1+k*epse_O*10^-3); %if k=1 it is equivalent to da_O=(dp_O-epse_O)./alphae_O
+da_H=(dp_H-k*epse_H)./(1+k*epse_H*10^-3); %equivalent to da=dp-epse
+da_O=(dp_O-k*epse_O)./(1+k*epse_O*10^-3);
 % da_H=-86; %example value from Gonfiantini 1986, to reproduce his exact results
 % da_O=-12; %example value from Gonfiantini 1986, to reproduce his exact results
 
@@ -297,8 +298,8 @@ for i=1:N
 
     % get atmospheric isotopic composition (precipitation-equilibrium assumption)
     k=1; %seasonality factor 
-    da_H(i)=(dp_H-k*epse_H)./(1+k*epse_H*10^-3); %if k=1 it is equivalent to da_H=(dp_H-epse_H)./alphae_H
-    da_O(i)=(dp_O-k*epse_O)./(1+k*epse_O*10^-3); %if k=1 it is equivalent to da_O=(dp_O-epse_O)./alphae_O
+    da_H(i)=(dp_H-k*epse_H)./(1+k*epse_H*10^-3); 
+    da_O(i)=(dp_O-k*epse_O)./(1+k*epse_O*10^-3); 
    
     % get the evaporation slopes for the desiccating body, derived from Gonfiantini (1986, eq.(6))
 %     del_H=(hm.*(dp_H-da_H(i))-(1+dp_H*10^-3).*(epsk_H+epse_H./alphae_H))./(1-hm+epsk_H*10^-3);
@@ -330,7 +331,7 @@ end
 xinterval=linspace(-90,10,3); %interval of dO18 for linear interpolation and plot 
 lmwl=2.12+7.45*xinterval;
 
-% get the trendline slope and intercept with the LMWL 
+% get the apparent line slope and intercept with the LMWL 
 app_fit=polyfit(dS_O,dS_H,1);
 appwl=app_fit(2)+app_fit(1)*xinterval;
 gmwl=10+8*xinterval; 
