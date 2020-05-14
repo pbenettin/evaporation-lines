@@ -20,7 +20,6 @@ start_seasonaldynamics=1;  %flag to run this part of code
 %--------------------------------------------------------------------------
 % notation
 %--------------------------------------------------------------------------
-
 % dl: isotopic composition of the residual liquid (sometimes referred to as dS)
 % dS: isotopic composition of the residual liquid (sometimes referred to as dl)
 % da: isotopic composition of the ambient athmospheric vapor (atmospheric moisture)
@@ -31,8 +30,9 @@ start_seasonaldynamics=1;  %flag to run this part of code
 % Tc: Temperature [degree Celsius]
 % Tk: Temperature [Kelvin]
 % hm: relative humidity [-]
-% x: ratio evaporation/precipitation [-]
-
+% n: aerodinamic regime parameter [-]
+% theta: weight term for cases when da is influenced by dE [-]
+% x: ratio evaporation/precipitation [-] or cumulative evaporation/initial volume
 
 %--------------------------------------------------------------------------
 % 1 - evaporating water volume (mostly following Gonfiantini 1986)
@@ -81,17 +81,10 @@ m_O=(hm-10^-3*(epsk_O+epse_O./alphae_O))./(1-hm+10^-3*epsk_O); %'enrichment slop
 dstar_H=(hm.*da_H+epsk_H+epse_H./alphae_H)/(hm-10^-3*(epsk_H+epse_H./alphae_H)); %this is A/B in Gonfiantini 1986
 dstar_O=(hm.*da_O+epsk_O+epse_O./alphae_O)/(hm-10^-3*(epsk_O+epse_O./alphae_O)); %this is A/B in Gonfiantini 1986
 
-% get approximate evaporation line slopes
-% compute the slope of the line connecting the source water (dp) to the 
-% limiting isotopic composition (dstar)
-% derived from Gonfiantini (1986, eq.(6))
-% del_H=(hm.*(dp_H-da_H)-(1+dp_H*10^-3).*(epsk_H+epse_H./alphae_H))./(1-hm+epsk_H*10^-3);
-% del_O=(hm.*(dp_O-da_O)-(1+dp_O*10^-3).*(epsk_O+epse_O./alphae_O))./(1-hm+epsk_O*10^-3);
-% Slel=del_H./del_O;
-% disp(' ')
-%disp(['da_H  = ',num2str(da_H,'%.2f')])
-%disp(['da_O = ',num2str(da_O,'%.2f')])
-%disp(['approx. line slope = ',num2str(Slel,'%.2f')])
+% get approximate evaporation line slopes: compute the slope of the line
+% connecting the source water (dp) to the limiting isotopic composition (dstar) 
+Slel=(dstar_H-dp_H)./(dstar_O-dp_O);
+fprintf('approx. evaporation slope = %.2f\n',Slel)
 
 % compute the isotopic composition of the residual liquid
 x=(0.1:0.1:1); %different evaporation/watervolume ratios
